@@ -1,3 +1,5 @@
+import pytest
+
 from src.sudoku_solver.cell import Cell
 
 
@@ -62,3 +64,12 @@ def test_preset_value():
 
     assert cell.isValueFound() is True
     assert cell.getValue() is 4
+
+def test_mark_not_possible_rejects_out_of_range_number():
+    cell = Cell()
+
+    with pytest.raises(RuntimeError):
+        cell.markNotPossible(0)
+
+    with pytest.raises(RuntimeError):
+        cell.markNotPossible(10)

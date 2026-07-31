@@ -1,3 +1,5 @@
+import pytest
+
 from src.sudoku_solver.grid import Grid
 from tests.sample_grids import STARTING_GRID
 
@@ -80,3 +82,21 @@ def test_get_sub_grid():
 
     assert subgrid[2].getValue() == 3
     assert subgrid[5].getValue() == 1
+
+def test_get_subgrid_rejects_out_of_range_row():
+    grid = Grid()
+
+    with pytest.raises(RuntimeError):
+        grid.getSubgridAsSingleArray(-1, 0)
+
+    with pytest.raises(RuntimeError):
+        grid.getSubgridAsSingleArray(3, 0)
+
+def test_get_subgrid_rejects_out_of_range_column():
+    grid = Grid()
+
+    with pytest.raises(RuntimeError):
+        grid.getSubgridAsSingleArray(0, -1)
+
+    with pytest.raises(RuntimeError):
+        grid.getSubgridAsSingleArray(0, 3)
