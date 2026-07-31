@@ -1,0 +1,12 @@
+[project]
+name = "sudoku-solver"
+version = "0.1.0"
+description = "A Sudoku solver application"
+requires-python = ">=3.10"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
