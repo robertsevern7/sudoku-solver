@@ -1,13 +1,11 @@
 import itertools
-import math
-
 
 class Solver:
     def solve(self, grid):
         while True:
             originalTotalPossible = grid.getTotalPossibleCount()
 
-            if grid.hasSolved():
+            if grid.isSolved():
                 print("Successfully Solved")
                 grid.printGrid()
                 return
@@ -103,9 +101,8 @@ class Solver:
     def excludeIfSingleIndex(self, grid):
         for row in range(3):
             for column in range(3):
-                # TODO something is up here
                 subgrid = grid.getSubgridAsSingleArray(row, column)
-                for number in [1]:
+                for number in range(1, 10):
                     single_row = self.isSingleRow(subgrid, number)
                     if single_row is not None:
                         self.excludeFromOtherCells(grid.getRow(row * 3 + single_row), number, column)

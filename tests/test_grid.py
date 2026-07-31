@@ -80,14 +80,3 @@ def test_get_sub_grid():
 
     assert subgrid[2].getValue() == 3
     assert subgrid[5].getValue() == 1
-
-def test_print():
-    presetValues = [[None for _ in range(9)] for _ in range(9)]
-    presetValues[3][4] = 5
-
-    grid = Grid(presetValues)
-
-    grid.getCell(0,1).markNotPossible(3)
-
-    grid.printGrid()
-    assert True

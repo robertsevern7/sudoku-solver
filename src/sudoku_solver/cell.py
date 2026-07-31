@@ -1,6 +1,6 @@
 class Cell:
     def __init__(self, value = None):
-        if value == None:
+        if value is None:
             self.possibleValues = [True, True, True, True, True, True, True, True, True]
         else:
             self.possibleValues = [False, False, False, False, False, False, False, False, False]
@@ -17,7 +17,7 @@ class Cell:
     def getNumberPossible(self) -> int:
         return sum(1 for value in self.possibleValues if value)
 
-    def getPossible(self) -> dict:
+    def getPossible(self) -> set:
         return set(index + 1 for index, value in enumerate(self.possibleValues) if value)
 
     def isPossible(self, number: int) -> bool:

@@ -5,10 +5,10 @@ class Grid:
     def __init__(self, predefinedValues = None):
         self.grid = [[Cell() for _ in range(9)] for _ in range(9)]
 
-        if predefinedValues != None:
+        if predefinedValues is not None:
             for r, row in enumerate(predefinedValues):
                 for c, value in enumerate(row):
-                    if value != None:
+                    if value is not None:
                         self.grid[r] [c] = Cell(value)
 
     def isSolved(self):
@@ -52,9 +52,6 @@ class Grid:
                 total += self.grid[row][column].getNumberPossible()
 
         return total
-
-    def hasSolved(self) -> int:
-        return self.getTotalPossibleCount() == 81
 
 
 # ########################################################
