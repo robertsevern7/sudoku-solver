@@ -225,3 +225,45 @@ def test_exclude_in_subgrid_column():
     assert 9 in grid.getCell(1, 8).getPossible()
     assert 9 not in grid.getCell(7, 8).getPossible()
 
+
+def assert_fully_and_correctly_solved(grid, originalPuzzle):
+    assert grid.isSolved()
+
+    for index in range(9):
+        assert {cell.getValue() for cell in grid.getRow(index)} == set(range(1, 10))
+        assert {cell.getValue() for cell in grid.getColumn(index)} == set(range(1, 10))
+
+    for row in range(3):
+        for column in range(3):
+            subgrid = grid.getSubgridAsSingleArray(row, column)
+            assert {cell.getValue() for cell in subgrid} == set(range(1, 10))
+
+    for r, row in enumerate(originalPuzzle):
+        for c, value in enumerate(row):
+            if value is not None:
+                assert grid.getCell(r, c).getValue() == value
+
+def test_solve_easy_grid():
+    grid = Grid(EASY_GRID)
+    solver = Solver()
+
+    solver.solve(grid)
+
+    assert_fully_and_correctly_solved(grid, EASY_GRID)
+
+def test_solve_medium_grid():
+    grid = Grid(MEDIUM_GRID)
+    solver = Solver()
+
+    solver.solve(grid)
+
+    assert_fully_and_correctly_solved(grid, MEDIUM_GRID)
+
+def test_solve_hard_grid():
+    grid = Grid(HARD_GRID)
+    solver = Solver()
+
+    solver.solve(grid)
+
+    assert_fully_and_correctly_solved(grid, HARD_GRID)
+
