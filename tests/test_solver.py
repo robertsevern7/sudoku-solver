@@ -359,14 +359,4 @@ def test_delete_from_within_subgrid():
     assert grid.getCell(7, 7).isPossible(3) is True
     assert grid.getCell(8, 6).isPossible(3) is False
 
-def test_single_column_removes_within_subgrid():
-    grid = build_grid_from_candidates(EXPERT_GRID_STUCK_CANDIDATES)
-
-    grid.printGrid()
-
-    solver = Solver()
-    solver.delete_from_within_subgrid(grid)
-
-    grid.printGrid()
-    assert False
 

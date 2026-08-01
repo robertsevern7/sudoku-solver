@@ -184,6 +184,5 @@ class Solver:
                       else [ cell for index, cell in enumerate(subgrid) if index not in [0 + index_to_retain, 3 + index_to_retain, 6 + index_to_retain]]
                     )
 
-        print('!!!!!!!!!! MARKING EXCLUDED', [cell.getPossible() for cell in to_exclude])
         for cell in to_exclude:
             cell.markNotPossible(number)
