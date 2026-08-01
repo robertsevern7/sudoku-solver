@@ -12,6 +12,7 @@ class Solver:
 
             self.fullIterativeThroughAllGroupSizes(grid)
             self.excludeIfSingleIndex(grid)
+            self.delete_from_within_subgrid(grid)
 
             updatedTotalPossibleCount = grid.getTotalPossibleCount()
 
@@ -47,7 +48,7 @@ class Solver:
         for row in range(3):
             for column in range(3):
                 self.eliminateExisting(grid.getSubgridAsSingleArray(row, column), group_size)
-
+# TECHNIQUE 1 - CONTIANED GROUPS--------------------------------------------------------
     def eliminateExisting(self, array, group_size: int):
         toTest = [[index, cell] for index, cell in enumerate(array) if cell.getNumberPossible() <= group_size]
         # If the set of unique numbers equals the group size, then eliminate those numbers from the other cells
@@ -97,7 +98,7 @@ class Solver:
                     for possibleValue in possibleValues:
                         value.markNotPossible(possibleValue)
 
-
+# TECHNIQUE 2 - CANDIDATES IN SINGLE COLUMNS AND ROWS--------------------------------------------------------
     def excludeIfSingleIndex(self, grid):
         for row in range(3):
             for column in range(3):
@@ -140,3 +141,49 @@ class Solver:
             if (index < subgrid_index * 3 or index >= subgrid_index * 3 + 3):
                 cell.markNotPossible(to_exclude)
 
+#  TECHNIQUE 3 - INVERSE OF 2--------------------------------------------------------
+    def delete_from_within_subgrid(self, grid) -> int:
+        for number in range(1, 10):
+            for index in range(9):
+                row = grid.getRow(index)
+                subgrid_index_for_row = self.is_only_in_subgrid(row, number)
+
+                if subgrid_index_for_row is not None:
+                    subgrid_for_row = grid.getSubgridAsSingleArray(index // 3, subgrid_index_for_row)
+                    self.exclude_within_subgrid(subgrid_for_row, number, index % 3, True)
+
+                column = grid.getColumn(index)
+                subgrid_index_for_column = self.is_only_in_subgrid(column, number)
+
+                if subgrid_index_for_column is not None:
+                    subgrid_for_column = grid.getSubgridAsSingleArray(subgrid_index_for_column, index // 3)
+                    self.exclude_within_subgrid(subgrid_for_column, number, index % 3, False)
+
+
+    def is_only_in_subgrid(self, array, number) -> int:
+        subgrid_1 = [cell for index, cell in enumerate(array) if index < 3]
+        subgrid_2 = [cell for index, cell in enumerate(array) if index >= 3 and index < 6]
+        subgrid_3 = [cell for index, cell in enumerate(array) if index >= 6]
+
+        is_in_subgrid_1 = sum(1 for cell in subgrid_1 if cell.isPossible(number)) > 0
+        is_in_subgrid_2 = sum(1 for cell in subgrid_2 if cell.isPossible(number)) > 0
+        is_in_subgrid_3 = sum(1 for cell in subgrid_3 if cell.isPossible(number)) > 0
+
+        if is_in_subgrid_1 and not is_in_subgrid_2 and not is_in_subgrid_3:
+            return 0
+
+        if not is_in_subgrid_1 and is_in_subgrid_2 and not is_in_subgrid_3:
+            return 1
+
+        if not is_in_subgrid_1 and not is_in_subgrid_2 and is_in_subgrid_3:
+            return 2
+
+    def exclude_within_subgrid(self, subgrid, number, index_to_retain, is_row):
+        to_exclude = ([ cell for index, cell in enumerate(subgrid) if index not in range(3*index_to_retain, (1 + index_to_retain)*3)]
+                      if is_row
+                      else [ cell for index, cell in enumerate(subgrid) if index not in [0 + index_to_retain, 3 + index_to_retain, 6 + index_to_retain]]
+                    )
+
+        print('!!!!!!!!!! MARKING EXCLUDED', [cell.getPossible() for cell in to_exclude])
+        for cell in to_exclude:
+            cell.markNotPossible(number)

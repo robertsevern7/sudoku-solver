@@ -1,7 +1,7 @@
 from src.sudoku_solver.cell import Cell
 from src.sudoku_solver.grid import Grid
 from src.sudoku_solver.solver import Solver
-from tests.sample_grids import EASY_GRID, HARD_GRID, HARD_GRID_2, MEDIUM_GRID, STARTING_GRID
+from tests.sample_grids import EASY_GRID, EXPERT_GRID_STUCK_CANDIDATES, HARD_GRID, HARD_GRID_2, MEDIUM_GRID, STARTING_GRID, build_grid_from_candidates
 
 
 def test_eliminate_single_values_row():
@@ -266,4 +266,107 @@ def test_solve_hard_grid():
     solver.solve(grid)
 
     assert_fully_and_correctly_solved(grid, HARD_GRID)
+
+
+def test_is_only_in_subgrid_column():
+    grid = build_grid_from_candidates(EXPERT_GRID_STUCK_CANDIDATES)
+    solver = Solver()
+
+    column_with_threes = grid.getColumn(7)
+    containing_subgrid = solver.is_only_in_subgrid(column_with_threes, 3)
+    assert containing_subgrid is 2
+
+    no_containing_subgrid = solver.is_only_in_subgrid(column_with_threes, 9)
+    assert no_containing_subgrid is None
+
+def test_is_only_in_subgrid_row():
+    grid = build_grid_from_candidates(EXPERT_GRID_STUCK_CANDIDATES)
+    solver = Solver()
+
+    row_with_twos = grid.getRow(6)
+    containing_subgrid = solver.is_only_in_subgrid(row_with_twos, 2)
+    assert containing_subgrid is 1
+
+    no_containing_subgrid = solver.is_only_in_subgrid(row_with_twos, 3)
+    assert no_containing_subgrid is None
+
+def test_exclude_within_subgrid_column():
+    grid = build_grid_from_candidates(EXPERT_GRID_STUCK_CANDIDATES)
+    solver = Solver()
+    # Take the case where we want to remove the 3's from the first column
+    subgrid_2_2 = grid.getSubgridAsSingleArray(2, 2)
+
+    assert subgrid_2_2[0].isPossible(3) is False
+    assert subgrid_2_2[1].isPossible(3) is True
+    assert subgrid_2_2[2].isPossible(3) is False
+    assert subgrid_2_2[3].isPossible(3) is False
+    assert subgrid_2_2[4].isPossible(3) is True
+    assert subgrid_2_2[5].isPossible(3) is False
+    assert subgrid_2_2[6].isPossible(3) is True
+    assert subgrid_2_2[7].isPossible(3) is False
+    assert subgrid_2_2[8].isPossible(3) is False
+
+    solver.exclude_within_subgrid(subgrid_2_2, 3, 1, False)
+
+    assert subgrid_2_2[0].isPossible(3) is False
+    assert subgrid_2_2[1].isPossible(3) is True
+    assert subgrid_2_2[2].isPossible(3) is False
+    assert subgrid_2_2[3].isPossible(3) is False
+    assert subgrid_2_2[4].isPossible(3) is True
+    assert subgrid_2_2[5].isPossible(3) is False
+    assert subgrid_2_2[6].isPossible(3) is False
+    assert subgrid_2_2[7].isPossible(3) is False
+    assert subgrid_2_2[8].isPossible(3) is False
+
+def test_exclude_within_subgrid_row():
+    grid = build_grid_from_candidates(EXPERT_GRID_STUCK_CANDIDATES)
+    solver = Solver()
+    # Take the case where we want to remove the 9's from the third row
+    subgrid_2_1 = grid.getSubgridAsSingleArray(2, 1)
+
+    assert subgrid_2_1[0].isPossible(9) is False
+    assert subgrid_2_1[1].isPossible(9) is False
+    assert subgrid_2_1[2].isPossible(9) is True
+    assert subgrid_2_1[3].isPossible(9) is False
+    assert subgrid_2_1[4].isPossible(9) is False
+    assert subgrid_2_1[5].isPossible(9) is False
+    assert subgrid_2_1[6].isPossible(9) is True
+    assert subgrid_2_1[7].isPossible(9) is False
+    assert subgrid_2_1[8].isPossible(9) is True
+
+    solver.exclude_within_subgrid(subgrid_2_1, 9, 0, True)
+
+    assert subgrid_2_1[0].isPossible(9) is False
+    assert subgrid_2_1[1].isPossible(9) is False
+    assert subgrid_2_1[2].isPossible(9) is True
+    assert subgrid_2_1[3].isPossible(9) is False
+    assert subgrid_2_1[4].isPossible(9) is False
+    assert subgrid_2_1[5].isPossible(9) is False
+    assert subgrid_2_1[6].isPossible(9) is False
+    assert subgrid_2_1[7].isPossible(9) is False
+    assert subgrid_2_1[8].isPossible(9) is False
+
+
+def test_delete_from_within_subgrid():
+    grid = build_grid_from_candidates(EXPERT_GRID_STUCK_CANDIDATES)
+    solver = Solver()
+
+    assert grid.getCell(8, 6).isPossible(3) is True
+
+    solver.delete_from_within_subgrid(grid)
+
+    assert grid.getCell(6, 7).isPossible(3) is True
+    assert grid.getCell(7, 7).isPossible(3) is True
+    assert grid.getCell(8, 6).isPossible(3) is False
+
+def test_single_column_removes_within_subgrid():
+    grid = build_grid_from_candidates(EXPERT_GRID_STUCK_CANDIDATES)
+
+    grid.printGrid()
+
+    solver = Solver()
+    solver.delete_from_within_subgrid(grid)
+
+    grid.printGrid()
+    assert False
 
