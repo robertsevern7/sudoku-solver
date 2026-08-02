@@ -1,22 +1,28 @@
 import itertools
+import time
 
 class Solver:
-    def solve(self, grid):
+    def solve(self, grid, backtrack_only = False):
+        start_time = int(time.time() * 1000)
+
         while True:
-            originalTotalPossible = grid.getTotalPossibleCount()
+            if not backtrack_only:
+                originalTotalPossible = grid.getTotalPossibleCount()
 
-            if grid.isSolved():
-                print("Successfully Solved")
-                grid.printGrid()
-                return
+                if grid.isSolved():
+                    print("Successfully Solved")
+                    end_time = int(time.time() * 1000)
+                    print("Took ", (end_time - start_time)/1000, 's')
+                    grid.printGrid()
+                    return
 
-            self.fullIterativeThroughAllGroupSizes(grid)
-            self.excludeIfSingleIndex(grid)
-            self.delete_from_within_subgrid(grid)
+                self.fullIterativeThroughAllGroupSizes(grid)
+                self.excludeIfSingleIndex(grid)
+                self.delete_from_within_subgrid(grid)
 
-            updatedTotalPossibleCount = grid.getTotalPossibleCount()
+                updatedTotalPossibleCount = grid.getTotalPossibleCount()
 
-            if originalTotalPossible == updatedTotalPossibleCount:
+            if backtrack_only or originalTotalPossible == updatedTotalPossibleCount:
                 print("I'm Stuck")
                 grid.printGrid()
 
@@ -29,6 +35,9 @@ class Solver:
                     print("Backtracking Failed:")
 
                 backtracked_grid.printGrid()
+                end_time = int(time.time() * 1000)
+
+                print("Took ", (end_time - start_time)/1000, 's')
                 return
 
 

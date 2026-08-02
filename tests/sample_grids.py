@@ -87,6 +87,18 @@ HARD_GRID_2 = [
     [None, 4   , 1   , None, None, None, None, None, 9   ],
 ]
 
+HARD_GRID_3 = [
+    [None, 2   , 8   , None, None, None, None, None, 5   ],
+    [None, None, 9   , 2   , None, None, None, None, None],
+    [6   , None, None, None, None, 3   , None, None, None],
+    [3   , None, 5   , None, None, 9   , 1   , None, 2   ],
+    [None, None, 1   , None, None, None, None, None, None],
+    [None, None, None, 3   , None, 7   , 4   , None, None],
+    [None, None, None, None, 7   , None, 5   , None, 9   ],
+    [None, None, None, 1   , None, None, None, 8   , None],
+    [None, None, None, 5   , None, 8   , None, 7   , 6   ],
+]
+
 # A puzzle with a unique solution that the current solver cannot fully solve
 # (it stalls partway through). Shape below, `.` = empty:
 #
