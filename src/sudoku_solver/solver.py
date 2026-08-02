@@ -19,6 +19,16 @@ class Solver:
             if originalTotalPossible == updatedTotalPossibleCount:
                 print("I'm Stuck")
                 grid.printGrid()
+
+                print("Trying back tracking")
+                backtracked_grid = self.solve_backtrack(grid)
+
+                if backtracked_grid.isSolved():
+                    print("Done!")
+                else:
+                    print("Backtracking Failed:")
+
+                backtracked_grid.printGrid()
                 return
 
 
@@ -186,3 +196,33 @@ class Solver:
 
         for cell in to_exclude:
             cell.markNotPossible(number)
+
+#  TECHNIQUE 4 - BRUTE FORCE TIME. BACK TRACKING--------------------------------------------------------
+    def solve_backtrack(self, grid):
+        return self.backtrack(grid, 0, 0)
+
+    def backtrack(self, grid, row, column):
+        cell = grid.getCell(row, column)
+
+        possible_list = list(cell.getPossible())
+        possible_list.sort()
+        for possible_value in possible_list:
+            new_grid = grid.clone()
+
+            new_cell = new_grid.getCell(row, column)
+            if not new_cell.isValueFound():
+                new_cell.setValue(possible_value)
+
+            if new_grid.isValid():
+                if column == 8 and row == 8:
+                    return new_grid
+                if column == 8:
+                    attempted_grid = self.backtrack(new_grid, row + 1, 0)
+                    if attempted_grid is not False:
+                        return attempted_grid
+                else:
+                    attempted_grid = self.backtrack(new_grid, row, column + 1)
+                    if attempted_grid is not False:
+                        return attempted_grid
+
+        return False

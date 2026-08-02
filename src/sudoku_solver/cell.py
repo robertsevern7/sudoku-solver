@@ -27,6 +27,22 @@ class Cell:
         if self.isValueFound():
             return 1 + next((index for index, value in enumerate(self.possibleValues) if value))
 
+    def setValue(self, number):
+        if not self.isPossible(number):
+            raise RuntimeError("Can't set number that is not eligible")
+
+        for to_exclude in [to_exclude for to_exclude in range(1, 10) if to_exclude != number]:
+            self.markNotPossible(to_exclude)
+
+    def clone(self):
+        cell = Cell()
+
+        for number in range(1, 10):
+            if number not in self.getPossible():
+                cell.markNotPossible(number)
+
+        return cell
+
     def render(self) -> list:
         if self.isValueFound():
             return [

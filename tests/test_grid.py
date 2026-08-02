@@ -1,6 +1,7 @@
 import pytest
 
 from src.sudoku_solver.grid import Grid
+from src.sudoku_solver.cell import Cell
 from tests.sample_grids import STARTING_GRID
 
 gridIterable = [[None for _ in range(9)] for _ in range(9)]
@@ -100,3 +101,93 @@ def test_get_subgrid_rejects_out_of_range_column():
 
     with pytest.raises(RuntimeError):
         grid.getSubgridAsSingleArray(0, 3)
+
+def test_has_no_dupes():
+    grid = Grid()
+
+    array = [Cell() for _ in range(9)]
+    array[0].setValue(1)
+    array[1].setValue(2)
+    assert not grid.hasDupes(array)
+
+def test_has_dupes():
+    grid = Grid()
+
+    array = [Cell() for _ in range(9)]
+    array[0].setValue(1)
+    array[1].setValue(1)
+    assert grid.hasDupes(array)
+
+def test_is_valid():
+    grid = Grid()
+    grid.getCell(0, 0).setValue(1)
+    grid.getCell(1, 1).setValue(2)
+    grid.getCell(2, 2).setValue(3)
+    grid.getCell(3, 3).setValue(4)
+    grid.getCell(4, 4).setValue(5)
+    grid.getCell(5, 5).setValue(6)
+    grid.getCell(6, 6).setValue(7)
+    grid.getCell(7, 7).setValue(8)
+    grid.getCell(8, 8).setValue(9)
+
+    assert grid.isValid()
+
+def test_is_not_valid_row():
+    grid = Grid()
+    grid.getCell(0, 0).setValue(1)
+    grid.getCell(1, 1).setValue(2)
+    grid.getCell(2, 2).setValue(3)
+    grid.getCell(3, 3).setValue(4)
+    grid.getCell(4, 4).setValue(5)
+    grid.getCell(5, 5).setValue(6)
+    grid.getCell(6, 6).setValue(7)
+    grid.getCell(7, 7).setValue(8)
+    grid.getCell(8, 8).setValue(9)
+
+    grid.getCell(0, 8).setValue(1)
+
+    assert not grid.isValid()
+
+def test_is_not_valid_column():
+    grid = Grid()
+    grid.getCell(0, 0).setValue(1)
+    grid.getCell(1, 1).setValue(2)
+    grid.getCell(2, 2).setValue(3)
+    grid.getCell(3, 3).setValue(4)
+    grid.getCell(4, 4).setValue(5)
+    grid.getCell(5, 5).setValue(6)
+    grid.getCell(6, 6).setValue(7)
+    grid.getCell(7, 7).setValue(8)
+    grid.getCell(8, 8).setValue(9)
+
+    grid.getCell(8, 0).setValue(1)
+
+    assert not grid.isValid()
+
+def test_is_not_valid_subgrid():
+    grid = Grid()
+    grid.getCell(0, 0).setValue(1)
+    grid.getCell(1, 1).setValue(2)
+    grid.getCell(2, 2).setValue(3)
+    grid.getCell(3, 3).setValue(4)
+    grid.getCell(4, 4).setValue(5)
+    grid.getCell(5, 5).setValue(6)
+    grid.getCell(6, 6).setValue(7)
+    grid.getCell(7, 7).setValue(8)
+    grid.getCell(8, 8).setValue(9)
+
+    grid.getCell(2, 1).setValue(1)
+
+    assert not grid.isValid()
+
+def test_clone():
+    grid = Grid(STARTING_GRID)
+    cloned = grid.clone()
+
+    assert cloned.getCell(0, 0).getValue() == grid.getCell(0, 0).getValue()
+    assert cloned.getCell(1, 1).getPossible() == grid.getCell(1, 1).getPossible()
+
+    cloned.getCell(1, 1).markNotPossible(5)
+
+    assert grid.getCell(1, 1).isPossible(5) is True
+    assert cloned.getCell(1, 1).isPossible(5) is False

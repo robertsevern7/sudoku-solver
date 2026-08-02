@@ -21,6 +21,9 @@ class Grid:
     def getCell(self, row: int, column: int) -> Cell:
         return self.getRow(row)[column]
 
+    def setCell(self, row, column, cell):
+        self.grid[row][column] = cell
+
     def getRow(self, row: int):
         return self.grid[row]
 
@@ -52,6 +55,43 @@ class Grid:
                 total += self.grid[row][column].getNumberPossible()
 
         return total
+
+    def isValid(self):
+        for index in range(9):
+            row = self.getRow(index)
+            if self.hasDupes(row):
+                return False
+
+            column = self.getColumn(index)
+            if self.hasDupes(column):
+                return False
+
+        for row_index in range(3):
+            for column_index in range(3):
+                subgrid = self.getSubgridAsSingleArray(row_index, column_index)
+                if self.hasDupes(subgrid):
+                    return False
+
+        return True
+
+    def hasDupes(self, array) -> False:
+        found = set()
+        for cell in [cell for cell in array if cell.isValueFound()]:
+            if cell.getValue() in found:
+                return True
+
+            found.add(cell.getValue())
+
+        return False
+
+    def clone(self):
+        grid = Grid()
+
+        for row in range(9):
+            for column in range(9):
+                grid.setCell(row, column, self.getCell(row, column).clone())
+
+        return grid
 
 
 # ########################################################

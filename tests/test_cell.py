@@ -73,3 +73,44 @@ def test_mark_not_possible_rejects_out_of_range_number():
 
     with pytest.raises(RuntimeError):
         cell.markNotPossible(10)
+
+def test_set_value():
+    cell = Cell()
+    cell.setValue(3)
+
+    assert cell.getValue() == 3
+
+def test_fail_set_value():
+    cell = Cell()
+
+    cell.markNotPossible(3)
+    with pytest.raises(RuntimeError):
+        cell.setValue(3)
+
+def test_clone():
+    cell = Cell()
+
+    cell.markNotPossible(1)
+    cell.markNotPossible(5)
+
+    cell_clone = cell.clone()
+
+    assert 1 not in cell_clone.getPossible()
+    assert 2 in cell_clone.getPossible()
+    assert 3 in cell_clone.getPossible()
+    assert 4 in cell_clone.getPossible()
+    assert 5 not in cell_clone.getPossible()
+    assert 6 in cell_clone.getPossible()
+    assert 7 in cell_clone.getPossible()
+    assert 8 in cell_clone.getPossible()
+    assert 9 in cell_clone.getPossible()
+
+    cell.markNotPossible(2)
+
+    assert 2 not in cell.getPossible()
+    assert 2 in cell_clone.getPossible()
+
+    cell_clone.markNotPossible(7)
+
+    assert 7 not in cell.getPossible()
+    assert 7 in cell_clone.getPossible()
